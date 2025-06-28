@@ -111,6 +111,7 @@ function downloadResume() {
 function openProject(githubUrl, demoUrl) {
     if (githubUrl) {
         window.open(githubUrl, '_blank');
+        showNotification('Opening GitHub repository!', 'info');
     }
     if (demoUrl && demoUrl !== '') {
         setTimeout(() => {
