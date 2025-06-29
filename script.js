@@ -1,3 +1,7 @@
+// Import Firebase functions
+import { db } from './firebase-config.js';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
 // Smooth scrolling for navigation links
 function scrollToSection(sectionId) {
     const element = document.getElementById(sectionId);
@@ -98,12 +102,9 @@ function createPetal(container) {
     });
 }
 
-// Download resume functionality - Updated with Google Drive link
+// Download resume functionality
 function downloadResume() {
-    // Open the Google Drive link in a new tab
     window.open('https://drive.google.com/file/d/1ycpRRSdiY5FdXB9JnZ2uEtgOjeGwgM51/view?usp=sharing', '_blank');
-    
-    // Show notification
     showNotification('Opening resume in new tab!', 'success');
 }
 
@@ -120,13 +121,13 @@ function openProject(githubUrl, demoUrl) {
     }
 }
 
-// Contact form handling - Restored to original functionality
-function handleFormSubmit(e) {
+// Enhanced contact form handling with Firebase
+async function handleFormSubmit(e) {
     e.preventDefault();
     
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const message = document.getElementById('message').value;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
     
     // Basic validation
     if (!name || !email || !message) {
@@ -141,14 +142,22 @@ function handleFormSubmit(e) {
         return;
     }
     
-    // Simulate form submission
     const submitButton = e.target.querySelector('button[type="submit"]');
     const originalText = submitButton.querySelector('span').textContent;
     
     submitButton.querySelector('span').textContent = 'Sending...';
     submitButton.disabled = true;
     
-    setTimeout(() => {
+    try {
+        // Add message to Firestore
+        await addDoc(collection(db, 'messages'), {
+            name: name,
+            email: email,
+            message: message,
+            timestamp: serverTimestamp(),
+            status: 'unread'
+        });
+        
         showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
         document.getElementById('contactForm').reset();
         
@@ -156,9 +165,13 @@ function handleFormSubmit(e) {
         const labels = document.querySelectorAll('.form-group label');
         labels.forEach(label => label.classList.remove('active'));
         
+    } catch (error) {
+        console.error('Error sending message:', error);
+        showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
+    } finally {
         submitButton.querySelector('span').textContent = originalText;
         submitButton.disabled = false;
-    }, 2000);
+    }
 }
 
 // Notification system
@@ -205,7 +218,9 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         notification.style.transform = 'translateX(100%)';
         setTimeout(() => {
-            document.body.removeChild(notification);
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
         }, 300);
     }, 5000);
 }
