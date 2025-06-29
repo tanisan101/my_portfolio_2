@@ -1,7 +1,3 @@
-// Import Firebase functions
-import { db } from './firebase-config.js';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-
 // Smooth scrolling for navigation links
 function scrollToSection(sectionId) {
     const element = document.getElementById(sectionId);
@@ -19,10 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     
-    hamburger.addEventListener('click', function() {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
 
     // Navigation link clicks
     const navLinks = document.querySelectorAll('.nav-link');
@@ -33,8 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
             scrollToSection(targetId);
             
             // Close mobile menu if open
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
         });
     });
 
@@ -65,7 +65,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Contact form handling
     const contactForm = document.getElementById('contactForm');
-    contactForm.addEventListener('submit', handleFormSubmit);
+    if (contactForm) {
+        contactForm.addEventListener('submit', handleFormSubmit);
+    }
     
     // Floating label animations
     setupFloatingLabels();
@@ -77,6 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // Cherry blossom animation
 function createCherryBlossoms() {
     const container = document.querySelector('.sakura-container');
+    if (!container) return;
+    
     const petalsCount = 15;
     
     for (let i = 0; i < petalsCount; i++) {
@@ -121,8 +125,8 @@ function openProject(githubUrl, demoUrl) {
     }
 }
 
-// Enhanced contact form handling with Firebase
-async function handleFormSubmit(e) {
+// Contact form handling (simplified without Firebase for now)
+function handleFormSubmit(e) {
     e.preventDefault();
     
     const name = document.getElementById('name').value.trim();
@@ -148,16 +152,8 @@ async function handleFormSubmit(e) {
     submitButton.querySelector('span').textContent = 'Sending...';
     submitButton.disabled = true;
     
-    try {
-        // Add message to Firestore
-        await addDoc(collection(db, 'messages'), {
-            name: name,
-            email: email,
-            message: message,
-            timestamp: serverTimestamp(),
-            status: 'unread'
-        });
-        
+    // Simulate form submission
+    setTimeout(() => {
         showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
         document.getElementById('contactForm').reset();
         
@@ -165,13 +161,9 @@ async function handleFormSubmit(e) {
         const labels = document.querySelectorAll('.form-group label');
         labels.forEach(label => label.classList.remove('active'));
         
-    } catch (error) {
-        console.error('Error sending message:', error);
-        showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
-    } finally {
         submitButton.querySelector('span').textContent = originalText;
         submitButton.disabled = false;
-    }
+    }, 2000);
 }
 
 // Notification system
@@ -233,19 +225,21 @@ function setupFloatingLabels() {
         const input = group.querySelector('input, textarea');
         const label = group.querySelector('label');
         
-        input.addEventListener('focus', () => {
-            label.classList.add('active');
-        });
-        
-        input.addEventListener('blur', () => {
-            if (!input.value) {
-                label.classList.remove('active');
+        if (input && label) {
+            input.addEventListener('focus', () => {
+                label.classList.add('active');
+            });
+            
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    label.classList.remove('active');
+                }
+            });
+            
+            // Check if input has value on load
+            if (input.value) {
+                label.classList.add('active');
             }
-        });
-        
-        // Check if input has value on load
-        if (input.value) {
-            label.classList.add('active');
         }
     });
 }
@@ -340,16 +334,16 @@ function rotateSkills() {
 
 // Trigger skills animation when about section is visible
 const aboutSection = document.querySelector('#about');
-const skillsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            rotateSkills();
-            skillsObserver.unobserve(entry.target);
-        }
-    });
-});
-
 if (aboutSection) {
+    const skillsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                rotateSkills();
+                skillsObserver.unobserve(entry.target);
+            }
+        });
+    });
+    
     skillsObserver.observe(aboutSection);
 }
 
