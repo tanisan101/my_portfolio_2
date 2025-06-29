@@ -1,7 +1,3 @@
-// Import Firebase services
-import { db, auth, storage, analytics } from './firebase.js';
-import { collection, addDoc, serverTimestamp } from './node_modules/firebase/firestore/dist/index.esm.js';
-
 // Smooth scrolling for navigation links
 function scrollToSection(sectionId) {
     const element = document.getElementById(sectionId);
@@ -124,8 +120,8 @@ function openProject(githubUrl, demoUrl) {
     }
 }
 
-// Enhanced contact form handling with Firebase
-async function handleFormSubmit(e) {
+// Contact form handling - Restored to original functionality
+function handleFormSubmit(e) {
     e.preventDefault();
     
     const name = document.getElementById('name').value;
@@ -145,22 +141,14 @@ async function handleFormSubmit(e) {
         return;
     }
     
+    // Simulate form submission
     const submitButton = e.target.querySelector('button[type="submit"]');
     const originalText = submitButton.querySelector('span').textContent;
     
     submitButton.querySelector('span').textContent = 'Sending...';
     submitButton.disabled = true;
     
-    try {
-        // Save contact form data to Firebase Firestore
-        await addDoc(collection(db, 'contacts'), {
-            name: name,
-            email: email,
-            message: message,
-            timestamp: serverTimestamp(),
-            status: 'new'
-        });
-        
+    setTimeout(() => {
         showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
         document.getElementById('contactForm').reset();
         
@@ -168,13 +156,9 @@ async function handleFormSubmit(e) {
         const labels = document.querySelectorAll('.form-group label');
         labels.forEach(label => label.classList.remove('active'));
         
-    } catch (error) {
-        console.error('Error saving contact form:', error);
-        showNotification('There was an error sending your message. Please try again.', 'error');
-    } finally {
         submitButton.querySelector('span').textContent = originalText;
         submitButton.disabled = false;
-    }
+    }, 2000);
 }
 
 // Notification system
