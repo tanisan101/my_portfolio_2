@@ -63,12 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cherry blossom animation
     createCherryBlossoms();
     
-    // Contact form handling
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', handleFormSubmit);
-    }
-    
     // Floating label animations
     setupFloatingLabels();
     
@@ -123,47 +117,6 @@ function openProject(githubUrl, demoUrl) {
             window.open(demoUrl, '_blank');
         }, 500);
     }
-}
-
-// Contact form handling (simplified without Firebase for now)
-function handleFormSubmit(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const message = document.getElementById('message').value.trim();
-    
-    // Basic validation
-    if (!name || !email || !message) {
-        showNotification('Please fill in all fields', 'error');
-        return;
-    }
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showNotification('Please enter a valid email address', 'error');
-        return;
-    }
-    
-    const submitButton = e.target.querySelector('button[type="submit"]');
-    const originalText = submitButton.querySelector('span').textContent;
-    
-    submitButton.querySelector('span').textContent = 'Sending...';
-    submitButton.disabled = true;
-    
-    // Simulate form submission
-    setTimeout(() => {
-        showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
-        document.getElementById('contactForm').reset();
-        
-        // Reset floating labels
-        const labels = document.querySelectorAll('.form-group label');
-        labels.forEach(label => label.classList.remove('active'));
-        
-        submitButton.querySelector('span').textContent = originalText;
-        submitButton.disabled = false;
-    }, 2000);
 }
 
 // Notification system
