@@ -6,6 +6,9 @@
     "dev": "npx http-server . -p 8080 -c-1",
     "start": "npx http-server . -p 8080"
   },
+  "dependencies": {
+    "firebase": "^10.7.1"
+  },
   "devDependencies": {
     "http-server": "^14.1.1"
   }

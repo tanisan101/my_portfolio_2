@@ -1,3 +1,7 @@
+// Import Firebase services
+import { db, auth, storage, analytics } from './firebase.js';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
 // Smooth scrolling for navigation links
 function scrollToSection(sectionId) {
     const element = document.getElementById(sectionId);
@@ -120,8 +124,8 @@ function openProject(githubUrl, demoUrl) {
     }
 }
 
-// Contact form handling
-function handleFormSubmit(e) {
+// Enhanced contact form handling with Firebase
+async function handleFormSubmit(e) {
     e.preventDefault();
     
     const name = document.getElementById('name').value;
@@ -141,19 +145,36 @@ function handleFormSubmit(e) {
         return;
     }
     
-    // Simulate form submission
     const submitButton = e.target.querySelector('button[type="submit"]');
     const originalText = submitButton.querySelector('span').textContent;
     
     submitButton.querySelector('span').textContent = 'Sending...';
     submitButton.disabled = true;
     
-    setTimeout(() => {
+    try {
+        // Save contact form data to Firebase Firestore
+        await addDoc(collection(db, 'contacts'), {
+            name: name,
+            email: email,
+            message: message,
+            timestamp: serverTimestamp(),
+            status: 'new'
+        });
+        
         showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
         document.getElementById('contactForm').reset();
+        
+        // Reset floating labels
+        const labels = document.querySelectorAll('.form-group label');
+        labels.forEach(label => label.classList.remove('active'));
+        
+    } catch (error) {
+        console.error('Error saving contact form:', error);
+        showNotification('There was an error sending your message. Please try again.', 'error');
+    } finally {
         submitButton.querySelector('span').textContent = originalText;
         submitButton.disabled = false;
-    }, 2000);
+    }
 }
 
 // Notification system
@@ -332,3 +353,8 @@ const skillsObserver = new IntersectionObserver((entries) => {
 if (aboutSection) {
     skillsObserver.observe(aboutSection);
 }
+
+// Make functions globally available
+window.scrollToSection = scrollToSection;
+window.downloadResume = downloadResume;
+window.openProject = openProject;
