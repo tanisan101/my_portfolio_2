@@ -1,6 +1,6 @@
 // Import Firebase services
 import { db, auth, storage, analytics } from './firebase.js';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from './node_modules/firebase/firestore/dist/index.esm.js';
 
 // Smooth scrolling for navigation links
 function scrollToSection(sectionId) {

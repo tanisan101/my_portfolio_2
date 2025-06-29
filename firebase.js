@@ -1,8 +1,8 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
-import { getAnalytics } from 'firebase/analytics';
+import { initializeApp } from './node_modules/firebase/app/dist/index.esm.js';
+import { getFirestore } from './node_modules/firebase/firestore/dist/index.esm.js';
+import { getAuth } from './node_modules/firebase/auth/dist/index.esm.js';
+import { getStorage } from './node_modules/firebase/storage/dist/index.esm.js';
+import { getAnalytics } from './node_modules/firebase/analytics/dist/index.esm.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBF1jJ4IHp09wawaCEKCNFdInA19DFivGY",
